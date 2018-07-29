@@ -4,7 +4,8 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET / controllers.SnippetController.index()
+GET / controllers.Assets.at(path = "/public", file = "index.html")
+GET /snippet/:sha256 controllers.SnippetController.show(sha256)
 POST /snippet controllers.SnippetController.create()
 
 # Map static resources from the /public folder to the /assets URL path
