@@ -7,9 +7,9 @@ import javax.inject.Inject
 import models.Snippet
 import monix.eval.Task
 import monix.execution.Scheduler
-import org.apache.commons.codec.digest.DigestUtils
 import play.api.db._
 import play.api.mvc.{InjectedController, Result}
+import utils.MySHA256
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,9 +36,9 @@ class SnippetController @Inject()(db: Database, ec: ExecutionContext) extends In
   def create() = Action.async { implicit req =>
     CreateSnippet.form.bindFromRequest().fold(f => Future.successful(parseError(f)), { body =>
       val content = body.snippet
-      val sha256 = DigestUtils.sha256Hex(content)
-      Snippet.create(sha256, content).run.transact(xa)
-          .map(_ => Ok(sha256)).runAsync
+      val digest = MySHA256.digestString(content)
+      Snippet.create(digest, content).run.transact(xa)
+          .map(_ => Ok(digest)).runAsync
 
     })
   }
