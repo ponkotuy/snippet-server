@@ -1,13 +1,17 @@
 package utils
 
-import java.nio.charset.Charset
 import java.security.MessageDigest
+import java.util.Base64
 
-// non-threadsafe
 object MySHA256 {
-  private[this] val instance = new ThreadLocal[MessageDigest] {
-    MessageDigest.getInstance("SHA-256")
+  val instance = new ThreadLocal[MessageDigest] {
+    override def initialValue(): MessageDigest = {
+      MessageDigest.getInstance("SHA-256")
+    }
   }
-  def digestBytes(bytes: Array[Byte]): Array[Byte] = instance.get.digest(bytes)
-  def digestString(str: String): String = new String(instance.get.digest(str.getBytes("UTF-8")))
+
+  val base64 = Base64.getUrlEncoder
+
+  def digest(bytes: Array[Byte]): Array[Byte] = instance.get.digest(bytes)
+  def digest(str: String): Array[Byte] = digest(str.getBytes("UTF-8"))
 }

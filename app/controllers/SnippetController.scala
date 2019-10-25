@@ -4,6 +4,7 @@ import doobie._
 import doobie.implicits._
 import forms.CreateSnippet
 import javax.inject.Inject
+import javax.xml.bind.DatatypeConverter
 import models.Snippet
 import monix.eval.Task
 import monix.execution.Scheduler
@@ -36,7 +37,7 @@ class SnippetController @Inject()(db: Database, ec: ExecutionContext) extends In
   def create() = Action.async { implicit req =>
     CreateSnippet.form.bindFromRequest().fold(f => Future.successful(parseError(f)), { body =>
       val content = body.snippet
-      val digest = MySHA256.digestString(content)
+      val digest = DatatypeConverter.printHexBinary(MySHA256.digest(content))
       Snippet.create(digest, content).run.transact(xa)
           .map(_ => Ok(digest)).runAsync
 

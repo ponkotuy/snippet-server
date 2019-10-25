@@ -15,7 +15,7 @@ window.onload = () => {
           headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'}
         }).then(res => {
           if (res.ok) {
-            res.text().then( (str) => location.href = `/snippet/${str}` )
+            res.text().then( (str) => location.href = `/snippet/${str.slice(0, 32)}` )
           }
         });
       }
